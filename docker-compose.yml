@@ -1,8 +1,7 @@
 version: "3.8"
 services:
     ccda:
-        build: 
-            context: ./
+        build: ./CCDA
         ports: 
             - "8000:8000"
         links:
@@ -19,6 +18,8 @@ services:
               target: /home/ccda
         command: ["wait-for-it", "database:5432", "--","wait-for-it","mcaas_db:3306","--","bash","/home/boostrap.sh","container"]
 
+    web:
+    
     database:
         image: "postgres:latest"
         ports: 

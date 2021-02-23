@@ -1,0 +1,6 @@
+[submodule "CCDA"]
+	path = CCDA
+	url = https://github.com/GSA/CCDA.git
+[submodule "CCDA-web"]
+	path = CCDA-web
+	url = https://github.com/GSA/CCDA-web
