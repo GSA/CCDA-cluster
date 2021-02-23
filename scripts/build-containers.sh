@@ -51,6 +51,10 @@ else
         log 'Deleting dangling images' $SCRIPT_NAME
         docker rmi -f $DANGLERS
     fi
+    
+    log "Configuring \e[3mdocker-compose.template.yml\e[0m with environment variables" $SCRIPT_NAME
+    SUB_STR='$NGINX_PORT,$CCDA_HOST,$CCDA_PORT,$POSTGRES_PORT,$MYSQL_PORT,$APP_IMG_NAME,$APP_IMG_TAG,$WEB_IMG_TAG,$WEB_IMG_NAME'
+    envsubst $SUB_STR < $ROOT_DIR/docker-compose.template.yml | sponge $ROOT_DIR/docker-compose.yml
 
     log "Images built. Run \e[3mdocker-compose up\e[0m to launch \e[7mCCDA\e[0m" $SCRIPT_NAME
 fi 

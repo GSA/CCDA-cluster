@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+    ccda:
+        image: $APP_IMG_NAME:$APP_IMG_TAG
+        ports: 
+            - "$CCDA_PORT:$CCDA_PORT"
+        networks:
+            - data
+            - ccda
+        env_file:
+            - ./env/container.env
+        volumes:
+            - type: bind
+              source: ./CCDA/ccda
+              target: /home/ccda
+        command: ["wait-for-it", "database:$POSTGRES_PORT", "--","wait-for-it","mcaas_db:$MYSQL_PORT","--","bash","/home/bootstrap.sh","container"]
+
+    web:
+        image: $WEB_IMG_NAME:$WEB_IMG_TAG
+        networks:
+            - ccda
+        env_file:
+            - ./env/container.env
+    
+    database:
+        image: "postgres:latest"
+        ports: 
+            - "$POSTGRES_PORT:$POSTGRES_PORT"
+        networks:
+            - data
+        env_file:
+            - ./env/container.env
+
+    mcaas_db: 
+        image: "mysql:5.7"
+        ports: 
+            - "$MYSQL_PORT:$MYSQL_PORT"
+        networks:
+            - data
+        env_file:
+            - ./env/container.env
