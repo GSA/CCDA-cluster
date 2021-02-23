@@ -24,10 +24,10 @@ else
     log "Configuring \e[3m$WEB_CONTAINER_NAME\e[0m With Upstream Server at \e[3m$CCDA_HOST:$CCDA_PORT\e[0m" $SCRIPT_NAME
     cp $CONF_DIR/nginx.ccda.conf $CONF_DIR/nginx.conf
 
-    log '>> Removing running containers' $SCRIPT_NAME
+    log 'Removing running containers' $SCRIPT_NAME
     docker-compose down
 
-    log '>> Clearing Docker cache' $SCRIPT_NAME
+    log 'Clearing Docker cache' $SCRIPT_NAME
     docker system prune -f
 
     for arg in "$@"
@@ -39,10 +39,12 @@ else
         fi
     done
 
-    log "Building application image \e[3m$APP_IMG_NAME:$APP_TAG_NAME" $SCRIPT_NAME
+    log "Building application image \e[3m$APP_IMG_NAME:$APP_TAG_NAME\e[0m" $SCRIPT_NAME
+    log "Image context: $APP_DIR" $SCRIPT_NAME
     docker build -t $APP_IMG_NAME:$APP_TAG_NAME $APP_DIR
 
-    log "Building web image \e[3m$WEB_IMG_NAME:$WEB_IMG_NAME" $SCRIPT_NAME
+    log "Building web image \e[3m$WEB_IMG_NAME:$WEB_IMG_TAG\e[0m" $SCRIPT_NAME
+    log "Image context: $WEB_DIR" $SCRIPT_NAME
     docker build -t $WEB_IMG_NAME:$WEB_IMG_TAG $WEB_DIR
 
     DANGLERS=$(docker images --filter "dangling=true" -q)
@@ -52,9 +54,10 @@ else
         docker rmi -f $DANGLERS
     fi
     
-    log "Configuring \e[3mdocker-compose.template.yml\e[0m with environment variables" $SCRIPT_NAME
-    SUB_STR='$NGINX_PORT,$CCDA_HOST,$CCDA_PORT,$POSTGRES_PORT,$MYSQL_PORT,$APP_IMG_NAME,$APP_IMG_TAG,$WEB_IMG_TAG,$WEB_IMG_NAME'
-    envsubst $SUB_STR < $ROOT_DIR/docker-compose.template.yml | sponge $ROOT_DIR/docker-compose.yml
+    # TODO: how to get around not having sponge command on Windows. 
+    # log "Configuring \e[3mdocker-compose.template.yml\e[0m with environment variables" $SCRIPT_NAME
+    # SUB_STR='$NGINX_PORT,$CCDA_HOST,$CCDA_PORT,$POSTGRES_PORT,$MYSQL_PORT,$APP_IMG_NAME,$APP_IMG_TAG,$WEB_IMG_TAG,$WEB_IMG_NAME'
+    # envsubst $SUB_STR < $ROOT_DIR/docker-compose.template.yml | sponge $ROOT_DIR/docker-compose.yml
 
     log "Images built. Run \e[3mdocker-compose up\e[0m to launch \e[7mCCDA\e[0m" $SCRIPT_NAME
 fi 

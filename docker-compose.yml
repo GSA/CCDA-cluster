@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     ccda:
-        image: ccda:latest
+        image: "ccda:latest"
         ports: 
             - "8000:8000"
         networks:
@@ -11,16 +11,18 @@ services:
             - ./env/container.env
         volumes:
             - type: bind
-              source: ./ccda
+              source: ./CCDA/ccda
               target: /home/ccda
-        command: ["wait-for-it", "database:5432", "--","wait-for-it","mcaas_db:3306","--","bash","/home/bootstrap.sh","container"]
+        command: ["wait-for-it", "database:5432", "--","wait-for-it","mcaas_db:3306","--","bash","/home/scripts/bootstrap.sh","container"]
 
     web:
-        image: ccda-web:latest
+        image: "ccda-web:latest"
         ports:
             - "8080:8080"
         networks:
             - ccda
+        env_file:
+            - ./env/container.env
 
     database:
         image: "postgres:latest"
@@ -29,7 +31,7 @@ services:
         networks:
             - data
         volumes:
-            - postgres:/var/lib/pgsql/data
+            - ccda_data:/var/lib/pgsql/data
         env_file:
             - ./env/container.env
 
@@ -47,4 +49,4 @@ networks:
     ccda:
 
 volumes:
-    postres:
+    ccda_data:
