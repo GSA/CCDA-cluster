@@ -28,6 +28,8 @@ services:
             - "5432:5432"
         networks:
             - data
+        volumes:
+            - postgres:/var/lib/pgsql/data
         env_file:
             - ./env/container.env
 
@@ -39,3 +41,10 @@ services:
             - data
         env_file:
             - ./env/container.env
+
+networks:
+    data:
+    ccda:
+
+volumes:
+    postres:
